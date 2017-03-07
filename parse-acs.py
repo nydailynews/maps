@@ -8,9 +8,21 @@ import doctest
 import csv
 import json
 
+def transpose_csv(from_fn, to_fn):
+    """ Flip a CSV's fields so horizontal tables become vertical.
+        Takes two filenames of CSVs, it writes the second.
+        """
+    with open(to_fn, 'wb') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',', quotechar='"')
+        with open(from_fn, 'rU') as f:
+            reader = csv.reader(f, delimiter=',')
+            items = [row for row in reader]
+
+        for x in zip(*items):
+            writer.writerow(x)
+
 def get_vertical_fields(fn, *args):
     """ Return data for an ACS table flipped vertically.
-        PUT EXAMPLE CSV HERE
         """
     with open(fn, 'rU') as f:
         reader = csv.reader(f, delimiter=',')
@@ -32,20 +44,26 @@ def get_vertical_fields(fn, *args):
                     output[current_subject] = d
     return output
 
-def transpose_csv(from_fn, to_fn):
-    """ Flip a CSV's fields so horizontal tables become vertical.
+def output_csv(output, fields):
+    """ Take a list of fields that correspond with the field names in the table
+        we ingested and loop through the table output.
         """
-    with open(to_fn, 'wb') as csvfile:
-        writer = csv.writer(csvfile, delimiter=',', quotechar='"')
-        with open(from_fn, 'rU') as f:
-            reader = csv.reader(f, delimiter=',')
-            items = [row for row in reader]
-
-        for x in zip(*items):
-            writer.writerow(x)
+    csvfile = open('output.csv', 'wb')
+    writer = csv.writer(csvfile, delimiter=',', quotechar='"')
+    header =  list(['PUMA','BOROUGH', 'CD', 'CD NAME']) + list(fields)
+    writer.writerow(header)
+    for row in output.iteritems():
+        # Aaaaaugh case-specific formatting. Need to turn this into a class and subclass it.
+        x = format_location(row[0])
+        for item in fields:
+            x.append(row[1][item])
+        writer.writerow(x)
 
 def format_location(value):
     """ Return a dict of location pieces.
+        >>> value = 'PUMA 4113: Queens Community District 10--Howard Beach & Ozone Park'
+        >>> print format_location(value)
+        ['PUMA 4113', 'Queens Community District 10', 'Howard Beach & Ozone Park']
         """
     has_quotes = 0
     d = {}
@@ -58,25 +76,8 @@ def format_location(value):
         d['cd_name'] = '"' + d['cd_name']
     return [d['puma'], d['borough'], d['cd_name']]
     
-def output_csv(output, fields):
-    """ Take a list of fields that correspond with the field names in the table
-        we ingested and loop through the table output.
-        """
-    csvfile = open('output.csv', 'wb')
-    writer = csv.writer(csvfile, delimiter=',', quotechar='"')
-    header =  list(['PUMA','BOROUGH', 'CD', 'CD NAME']) + list(fields)
-    print header
-    #header.insert(0, ['PUMA','BOROUGH', 'CD', 'CD NAME'])
-    writer.writerow(header)
-    for row in output.iteritems():
-        # Aaaaaugh case-specific formatting. Need to turn this into a class and subclass it.
-        x = format_location(row[0])
-        for item in fields:
-            x.append(row[1][item])
-        writer.writerow(x)
-
 def main(args):
-    """ 
+    """ Need to abstract the hard-coded filenames and fields.
         """
     if len(args.filename[0]) > 0:
         fn = args.filename[0][0]
