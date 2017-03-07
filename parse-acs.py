@@ -2,11 +2,9 @@
 # Get data from an ACS table
 import sys
 import argparse
-import re
 import string
 import doctest
 import csv
-import json
 
 def transpose_csv(from_fn, to_fn):
     """ Flip a CSV's fields so horizontal tables become vertical.
