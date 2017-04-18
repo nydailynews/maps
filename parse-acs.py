@@ -90,9 +90,9 @@ def build_parser(args):
         >>> print args.verbose
         True
         """
-    parser = argparse.ArgumentParser(usage='$ python get-field.py',
+    parser = argparse.ArgumentParser(usage='$ python parse-acs.py',
                                      description='.',
-                                     epilog='Examply use: python get-field.py')
+                                     epilog='Example use: python parse-acs.py')
     parser.add_argument("-v", "--verbose", dest="verbose", default=False, action="store_true")
     parser.add_argument("filename", action="append", nargs="*")
     args = parser.parse_args(args)
