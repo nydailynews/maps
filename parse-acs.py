@@ -82,6 +82,7 @@ def main(args):
     transpose_csv(fn, 'new.csv')
     output = get_vertical_fields('new.csv')
     fields = ['Hispanic or Latino (of any race)', 'White', 'Black or African American', 'Asian', 'Some other race']
+    fields = ['White alone']
     output_csv(output, fields)
 
 def build_parser(args):
