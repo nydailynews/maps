@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<head>
+    <title>NYC homeless beds, poverty and race maps</title>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <link href="https://fonts.googleapis.com/css?family=PT+Serif" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+/*
+.leaflet-tile-pane { display:none; }
+.leaflet-zoom-animated { background-color:white; }
+*/
+
+body { margin: 0; padding: 0; }
+/* Map Info Box Styles */
+.info 
+{
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    float:left;
+}
+.info h2, .info h3 { }
+.info h2, .info h3, .info h4
+{
+    margin: 0 10px;
+    padding: 0;
+    color: #333;
+}
+.maps
+{
+    margin: auto;
+    width: 100%; 
+    border:1px solid #999;
+}
+#nyc-boroughs { height: 500px; }
+h1, h2, h3 {
+    font: bold 20px 'Open Sans Condensed', sans-serif;
+    color: #333;
+    margin: auto;
+}
+h2 {
+    font-size: 26px;
+    clear: both;
+}
+#static h3 { margin-bottom: 0; }
+h4 { margin-bottom: 0; }
+p, label, dd { font: 17px/30px "PT Serif",serif; }
+#static > div {
+    float: left;
+    max-width: 200px;
+}
+#static img {
+    width: 198px;
+    border: 1px solid #333;
+}
+article { max-width: 596px; margin: auto; }
+
+/* Legend styles */
+#legend > div { 
+    width: 30%;
+    float: left;
+}
+dl { margin: 0; }
+dl dt {
+    float: left; 
+    width: 15px;
+    height: 15px;
+    border: 1px solid #333;
+    clear: both;
+}
+dd {
+    font-size: 13px;
+    margin-left: 20px;
+    line-height: 20px;
+    padding-top: 0;
+}
+dt#asian { background-color: hsl(0, 50%, 50%); }
+dt#black { background-color: hsl(30, 50%, 50%); }
+dt#hispanic { background-color: hsl(180, 50%, 50%); }
+dt#white { background-color: hsl(240, 50%, 50%); }
+.homeless dt#max {  background-color: rgb(31, 95, 95); }
+.poverty dt#max { rgb(95, 78, 31); }
+
+/* HANDHELD ADJUSTMENTS */
+@media only screen and (max-width:590px) {
+    h3 { font-size: 18px; }
+    h2 { clear: both; }
+    article { width: 100%; max-width: 100%; }
+    #static > div { max-width: 100%; }
+    #static img { width: 98%; }
+}
+p#source {
+    clear: both;
+    font-size: 13px;
+    line-height: 13px;
+}
+    </style>
+</head>
+<body>
+
+<article>
+<div id="static" style="display:none;">
+    <div>
+        <h3>Current homeless beds per community district</h3>
+        <img src="map-nyc-homeless-beds.gif" alt="A color-coded map of current homeless beds per NYC community district">
+    </div>
+    <div>
+        <h3>Poverty rate per community district</h3>
+        <img src="map-nyc-poverty.gif" alt="A color-coded map of poverty rate per NYC community district">
+    </div>
+    <div>
+        <h3>Majority race per community district</h3>
+        <img src="map-nyc-race.gif" alt="A color-coded map of the majority race and that race's relative presence, per NYC community district">
+    </div>
+</div>
+
+<div>
+    <h2>Who bears the burden of sheltering the homeless</h2>
+    <p>A breakdown by Community District showing the number of shelter beds, cluster site apartments and hotel rooms where the city places homeless families and individuals, relative to the racial breakdown and poverty rate.</p>
+
+    <div class="maps" id="nyc-boroughs"></div>
+    <div id="map-controls" class="map-controls">
+        <input type="radio" name="map_type" id="Beds" value="Beds" checked onClick="choropleth.switch_map(this);"> <label for="Beds">Map by homeless beds</label>
+        <input type="radio" name="map_type" id="Poverty" value="Poverty"  onClick="choropleth.switch_map(this);"> <label for="Poverty">Map by poverty rate</label>
+        <input type="radio" name="map_type" id="Majority" value="Majority"  onClick="choropleth.switch_map(this);"> <label for="Majority">Map by race</label>
+    </div>
+    <div id="legend">
+            <h4>Legend for the race map</h4>
+            <dl class="legend race">
+                <dt id="asian"></dt><dd>Asian-majority district</dd>
+                <dt id="black"></dt><dd>Black-majority</dd>
+                <dt id="hispanic"></dt><dd>Hispanic-majority</dd>
+                <dt id="white"></dt><dd>White-majority</dd>
+            </dl>
+<!--
+        <div>
+            <h4>Legend for the beds map</h4>
+            <dl class="legend homeless">
+                <dt id="zero"></dt><dd>0-100 homeless beds</dd>
+                <dt id="max"></dt><dd>1,800-1,937 homeless beds</dd>
+            </dl>
+        </div>
+        <div>
+            <h4>Legend</h4>
+            <dl class="legend poverty">
+                <dt id="zero"></dt><dd>0% poverty</dd>
+                <dt id="max"></dt><dd></dd>
+                <dt id="max"></dt><dd></dd>
+                <dt id="max"></dt><dd></dd>
+                <dt id="max"></dt><dd>44% poverty</dd>
+            </dl>
+    </div>
+-->
+    <p id="source"> Source: U.S. Census Bureau 2014 American Community Survey and New York City Department of Homeless Services.  </p>
+</article>
+<script src="data.js"></script>
+<script>
+var choropleth = {
+    config: {
+        centerpoint: [40.650002, -73.949997],
+        fields: ['Majority', 'Poverty', 'Beds'],
+        max: { 'Majority': 93.3, 'Poverty': 44, 'Beds': 1937},
+        color: { 'Majority': 93, 'Poverty': 44, 'Beds': 180},
+        color_race: { 'Asian': 0, 'Black': 30, 'Hispanic': 180, 'White': 240, 'Other': 120 },
+    },
+    current_field: 'Beds',
+    switch_map: function(input) {
+        if ( input.value == 'Beds' || input.value == 'Poverty' || input.value == 'Majority' )
+        {
+            this.config.map_type = input.value;
+            this.current_field = input.value;
+            this.info.removeFrom(this.map);
+            this.map.removeLayer(this.layerOptions);
+            this.init();
+        }
+    },
+    info: L.control(),
+    boundaryOptions: L.geoJson(null, {
+        style: function(feature) {
+            return { 
+                weight: 5,
+                fillOpacity: 0,
+                color: '#000',
+                fillColor: '#FFF'
+            };
+        }
+    }),
+    clear_borders: function() {
+        for ( var property in this.layerOptions._layers ) {
+            if ( this.layerOptions._layers.hasOwnProperty(property) ) {
+                var l = this.layerOptions._layers[property];
+                this.layerOptions.resetStyle(l);
+            }
+        }
+    },
+    layerOptions: L.geoJson(null, {
+        onEachFeature: function (feature, layer) {
+            layer.on({
+                click: function(e) { choropleth.clear_borders(); choropleth.info.update(e, this.feature.properties); },
+                mouseover: function(e) { choropleth.info.update(e, this.feature.properties);                   },
+                mouseout: function(e) { choropleth.info.update(e); }
+            });
+        },
+        // http://leafletjs.com/reference.html#geojson-style
+        style: function(feature) {
+            //console.log(feature);
+            var c = choropleth;
+            var slug = feature['properties']['BoroCD'];
+            if ( typeof data[slug] === 'undefined' ) return { weight: 0, fillOpacity: 0, color: '#000' };
+
+            var d = c.data;
+            var field = c.current_field;
+            var val = data[slug][field];
+            var color = c.config.color[c.current_field];
+
+            // If we're publishing the race map, we need the value for the actual
+            // majority race, which we get here.
+            if ( field == 'Majority' ) {
+                var r = val;
+                val = data[slug][val];
+                var color = c.config.color_race[r];
+            }
+
+            // We want to shift the color from white to darker.
+            // That means percent starts at 100 and works down to 50.
+            var percent = Math.floor(( val/c.config.max[c.current_field] ) * 100) - 10;
+            var color_percent = 100 - Math.floor(percent/1.2);
+            return { 
+                weight: 1,
+                fillOpacity: 1,
+                color: '#333',
+                fillColor: 'hsl(' + color + ', 50%, ' + color_percent + '%)' 
+            };
+        }
+    }),
+    map: L.map('nyc-boroughs', { dragging: false, zoomControl:true, minZoom:10, scrollWheelZoom:false }).setView([40.700002, -73.949997], 8),
+    init: function() {
+        //this.map = L.map('nyc-boroughs', { zoomControl:true, minZoom:10, scrollWheelZoom:false }).setView(this.config.centerpoint, 8);
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+        }).addTo(this.map);
+        
+        //boundaries = L.geoJson().addTo(this.map);
+        boundaries = this.layerOptions
+
+        // We want the borough boundaries
+        $.ajax({
+            dataType: "json",
+            url: "nyc-borough-simplified.json",
+            success: function(data) {
+                $(data.features).each(function(key, data) {
+                    choropleth.boundaryOptions.addData(data);
+                });
+            }
+        }).error(function() {});
+        this.boundaryOptions.addTo(this.map);
+
+        // And the community district boundaries
+        $.ajax({
+            dataType: "json",
+            url: "nyc-borough-community-districts-simplified.json",
+            success: function(data) {
+                $(data.features).each(function(key, data) {
+                    choropleth.layerOptions.addData(data);
+                });
+            }
+        }).error(function() {});
+        this.layerOptions.addTo(this.map);
+
+
+        // Functions that control the on-hover info windows
+        this.info.options = {
+            position: 'bottomright'
+        };
+        this.info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+        this.info.update = function (e, props) {
+            if ( typeof props !== 'undefined' )
+            {
+                if ( typeof data[props['BoroCD']] === 'undefined' ) return {}; 
+                var slug = props['BoroCD'];
+                var d = data[slug];
+                var markup = '<h3>' + d['Community District'] + '</h3><h4>' + d['Name'] + '</h4>\n\
+<ul>\n\
+<li>' + d['Beds'] + ' current homeless beds</li>\n\
+<li>' + d['Poverty'] + '% poverty</li>\n\
+<li>' + d[d['Majority']] + '% ' + d['Majority'] + '</li>\n\
+</ul>';
+                this._div.innerHTML = markup;
+                var layer = e.target;
+                layer.setStyle({
+                    width: 10,
+                    weight: 10,
+                    color: '#f55'
+                });
+            }
+            else {
+                this._div.innerHTML =  'Hover or tap on a community district';
+                if ( typeof e !== 'undefined' ) {
+                    window.choropleth.layerOptions.resetStyle(e.target);
+                }
+            }
+        };
+        this.info.addTo(this.map);
+    }
+};
+choropleth.init();
+</script>
+</body>
+</html>

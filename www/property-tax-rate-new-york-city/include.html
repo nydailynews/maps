@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<head>
+    <title>NYC property tax map</title>
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:700|PT+Serif' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+/*
+.leaflet-tile-pane { display:none; }
+.leaflet-zoom-animated { background-color:white; }
+*/
+
+body { margin: 0; padding: 0; }
+/* Map Info Box Styles */
+.info 
+{
+    padding: 6px 8px;
+    font: 14px/16px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
+    float:left;
+}
+.info h2, .info h3 { }
+.info h2, .info h3, .info h4
+{
+    margin: 0 10px;
+    padding: 0;
+    color: #333;
+}
+.maps
+{
+    margin: auto;
+    width: 100%; 
+    border:1px solid #999;
+}
+#nyc-boroughs { height: 500px; }
+h1, h2, h3 {
+    font: bold 20px 'Open Sans Condensed', sans-serif;
+    color: #333;
+    margin: auto;
+}
+h2 {
+    font-size: 26px;
+    clear: both;
+}
+#static h3 { margin-bottom: 0; }
+h4 { margin-bottom: 0; }
+p, label, dd { font: 17px/30px "PT Serif",serif; }
+#static > div {
+    float: left;
+    max-width: 200px;
+}
+#static img {
+    width: 198px;
+    border: 1px solid #333;
+}
+article { max-width: 596px; margin: auto; }
+
+/* Legend styles */
+#legend > div { 
+    width: 30%;
+    float: left;
+}
+dl { margin: 0; }
+dl dt {
+    float: left; 
+    width: 15px;
+    height: 15px;
+    border: 1px solid #333;
+    clear: both;
+}
+dd {
+    font-size: 13px;
+    margin-left: 20px;
+    line-height: 20px;
+    padding-top: 0;
+}
+dt#asian { background-color: hsl(0, 50%, 50%); }
+dt#black { background-color: hsl(30, 50%, 50%); }
+dt#hispanic { background-color: hsl(180, 50%, 50%); }
+dt#white { background-color: hsl(240, 50%, 50%); }
+.homeless dt#max {  background-color: rgb(31, 95, 95); }
+.poverty dt#max { rgb(95, 78, 31); }
+
+/* HANDHELD ADJUSTMENTS */
+@media only screen and (max-width:590px) {
+    h3 { font-size: 18px; }
+    h2 { clear: both; }
+    article { width: 100%; max-width: 100%; }
+    #static > div { max-width: 100%; }
+    #static img { width: 98%; }
+}
+p#source {
+    clear: both;
+    font-size: 13px;
+    line-height: 13px;
+}
+    </style>
+</head>
+<body>
+
+<article>
+<div id="static" style="display:none;">
+    <div>
+        <h3>Current homeless beds per community district</h3>
+        <img src="map-nyc-homeless-beds.gif" alt="A color-coded map of current homeless beds per NYC community district">
+    </div>
+    <div>
+        <h3>White rate per community district</h3>
+        <img src="map-nyc-poverty.gif" alt="A color-coded map of poverty rate per NYC community district">
+    </div>
+    <div>
+        <h3>Majority race per community district</h3>
+        <img src="map-nyc-race.gif" alt="A color-coded map of the majority race and that race's relative presence, per NYC community district">
+    </div>
+</div>
+
+<div>
+    <h2>Property tax rate advantage</h2>
+    <p>
+        <strong>Not all properties are assessed equally</strong>. Compare the assessed value against original sale price across the five borough community districts, and then look at how white (non-hispanic) each of those districts are. The higher the tax assessment, the higher the property tax.
+    </p>
+
+    <div class="maps" id="nyc-boroughs"></div>
+    <div id="map-controls" class="map-controls">
+        <input type="radio" name="map_type" id="Tax" value="Tax" checked onClick="choropleth.switch_map(this);"> <label for="Tax">Map by property tax assessment-to-sale price comparison</label>
+        <br>
+        <input type="radio" name="map_type" id="White-only" value="White-only"  onClick="choropleth.switch_map(this);"> <label for="White-only">Map by % white</label>
+    </div>
+    <div id="legend">
+            <h4>Legend for the tax map</h4>
+            <dl class="legend tax">
+                <dt id="min"></dt><dd>Most advantageous, 49 percent of assessed value</dd>
+                <dt id="mid" style="background-color:rgb(220, 204, 189);"></dt><dd>Slightly advantageous</dd>
+                <dt id="mid" style="background-color:rgb(195, 168, 142);"></dt><dd>Slightly disadvantageous</dd>
+                <dt id="max" style="background-color:rgb(83, 63, 44);"></dt><dd>Most disadvantageous, 141 percent</dd>
+            </dl>
+    <p id="source"> Source: U.S. Census Bureau 2014 American Community Survey and New York City Department of Finance.</p>
+</article>
+<script src="data.js"></script>
+<script>
+var choropleth = {
+    config: {
+        centerpoint: [40.650002, -73.949997],
+        fields: ['White-only', 'Tax'],
+        max: { 'White-only': 83.5, 'Tax': 141.38},
+        min: { 'White-only': 1.4, 'Tax': 69.92},
+        color: { 'White-only': 180, 'Tax': 30},
+        color_race: { 'Asian': 0, 'Black': 30, 'Hispanic': 180, 'White': 240, 'Other': 120 },
+    },
+    current_field: 'Tax',
+    switch_map: function(input) {
+        if ( input.value == 'Tax' || input.value == 'White-only' )
+        {
+            this.config.map_type = input.value;
+            this.current_field = input.value;
+            this.info.removeFrom(this.map);
+            this.map.removeLayer(this.layerOptions);
+            this.init();
+        }
+    },
+    info: L.control(),
+    boundaryOptions: L.geoJson(null, {
+        style: function(feature) {
+            return { 
+                weight: 5,
+                fillOpacity: 0,
+                color: '#000',
+                fillColor: '#FFF'
+            };
+        }
+    }),
+    clear_borders: function() {
+        for ( var property in this.layerOptions._layers ) {
+            if ( this.layerOptions._layers.hasOwnProperty(property) ) {
+                var l = this.layerOptions._layers[property];
+                this.layerOptions.resetStyle(l);
+            }
+        }
+    },
+    layerOptions: L.geoJson(null, {
+        onEachFeature: function (feature, layer) {
+            layer.on({
+                click: function(e) { choropleth.clear_borders(); choropleth.info.update(e, this.feature.properties); },
+                mouseover: function(e) { choropleth.info.update(e, this.feature.properties);                   },
+                mouseout: function(e) { choropleth.info.update(e); }
+            });
+        },
+        // http://leafletjs.com/reference.html#geojson-style
+        style: function(feature) {
+            //console.log(feature);
+            var c = choropleth;
+            var slug = feature['properties']['BoroCD'];
+            if ( typeof data[slug] === 'undefined' ) return { weight: 0, fillOpacity: 0, color: '#000' };
+
+            var d = c.data;
+            var field = c.current_field;
+            var val = data[slug][field];
+            var color = c.config.color[c.current_field];
+
+            // We want to shift the color from white to darker.
+            // We also want it to be proportional based on the minimum for a particular field.
+            // That means percent starts at 100 and works down to 50.
+            var range = c.config.max[c.current_field] - c.config.min[c.current_field];
+            var percent = Math.floor(( (val- c.config.min[c.current_field]) / ( c.config.max[c.current_field] - c.config.min[c.current_field]) ) * 100) - 10;
+            // Go from light to dark on Whiteness, and the opposite on Taxes
+            color_percent = 30 + Math.floor(percent/1.2);
+            if ( c.current_field == 'Tax' ) color_percent = 100 - Math.floor(percent/1.2);
+            return { 
+                weight: 1,
+                fillOpacity: 1,
+                color: '#333',
+                fillColor: 'hsl(' + color + ', 30%, ' + color_percent + '%)' 
+            };
+        }
+    }),
+    map: L.map('nyc-boroughs', { dragging: true, zoomControl:false, minZoom:10, scrollWheelZoom:true}).setView([40.700002, -73.949997], 8),
+    init: function() {
+        //this.map = L.map('nyc-boroughs', { zoomControl:true, minZoom:10, scrollWheelZoom:false }).setView(this.config.centerpoint, 8);
+        L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+        }).addTo(this.map);
+        
+        //boundaries = L.geoJson().addTo(this.map);
+        boundaries = this.layerOptions
+
+        // We want the borough boundaries NOT ANYMORE
+        /*
+        $.ajax({
+            dataType: "json",
+            url: "nyc-borough-simplified.json",
+            success: function(data) {
+                $(data.features).each(function(key, data) {
+                    choropleth.boundaryOptions.addData(data);
+                });
+            }
+        }).error(function() {});
+        this.boundaryOptions.addTo(this.map);
+        */
+
+        // And the community district boundaries
+        $.ajax({
+            dataType: "json",
+            url: "nyc-borough-community-districts-simplified.json",
+            success: function(data) {
+                $(data.features).each(function(key, data) {
+                    choropleth.layerOptions.addData(data);
+                });
+            }
+        }).error(function() {});
+        this.layerOptions.addTo(this.map);
+
+
+        // Functions that control the on-hover info windows
+        this.info.options = {
+            position: 'topleft'
+        };
+        this.info.onAdd = function (map) {
+            this._div = L.DomUtil.create('div', 'info');
+            this.update();
+            return this._div;
+        };
+        this.info.update = function (e, props) {
+            if ( typeof props !== 'undefined' )
+            {
+                if ( typeof data[props['BoroCD']] === 'undefined' ) return {}; 
+                var slug = props['BoroCD'];
+                var d = data[slug];
+                var percent = '%';
+                if ( d['Tax'] == 'n/a' ) percent = '';
+
+                var advantage = 'advantage';
+                var below = 'below';
+                if ( +d['Tax'] > 100 ) {
+                    advantage = 'disadvantage';
+                    below = 'above';
+                }
+                var blurb = '<h4>Assessed value ' + below + ' sales price.</h4>';
+                var cd_blurb = '<h4>' + d['Name'] + ' is at a<br>\n\
+property tax ' + advantage + ' (' + d['Tax'] + percent + ')</h4>';
+                if ( d['Tax'] == 'n/a' ) {
+                    blurb = '';
+                    cd_blurb = '<h4>' + d['Name'] + '</h4>';
+                }
+                var markup = '<h3>' + d['Community District'] + '</h3>\n\
+' + blurb + cd_blurb + '\n\
+<ul>\n\
+<li>' + d['White-only'] + '% non-hispanic white</li>\n\
+</ul>';
+                this._div.innerHTML = markup;
+                var layer = e.target;
+                layer.setStyle({
+                    width: 10,
+                    weight: 10,
+                    color: '#f55'
+                });
+            }
+            else {
+                this._div.innerHTML =  'Hover or tap on a community district';
+                if ( typeof e !== 'undefined' ) {
+                    window.choropleth.layerOptions.resetStyle(e.target);
+                }
+            }
+        };
+        this.info.addTo(this.map);
+    }
+};
+choropleth.init();
+</script>
+</body>
+</html>

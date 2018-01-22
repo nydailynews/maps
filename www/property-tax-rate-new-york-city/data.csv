@@ -1,0 +1,60 @@
+ID,Community District,Name,Hispanic,White,Black,Asian,Other,White-only,Non-white,Majority,Poverty,Tax rate differential
+101,Manhattan CD 1,Battery Park City,6.9,79.7,3.5,17.1,2.5,72.3,27.7,White,8,49.92
+102,Manhattan CD 2,Greenwich Village & Soho,6.9,79.7,3.5,17.1,2.5,72.3,27.7,White,8,94.48
+103,Manhattan CD 3,Chinatown & Lower East Side,24.6,45.5,9.4,33.9,14.1,32.8,67.2,White,25.1,110.53
+104,Manhattan CD 4,"Chelsea, Clinton",14.7,73.8,7.5,16.6,4.8,61.9,38.1,White,12.7,102.74
+105,Manhattan CD 5,Midtown Business District,14.7,73.8,7.5,16.6,4.8,61.9,38.1,White,12.7,n/a
+106,Manhattan CD 6,"Murray Hill, Gramercy & Stuyvesant Town",8.5,78.1,4.5,16.2,3.1,70.3,29.7,White,9.5,87.19
+107,Manhattan CD 7,Upper West Side & West Side,14.2,78.5,9.9,10.2,3.7,68.5,31.5,White,9.9,100.72
+108,Manhattan CD 8,Upper East Side,7.9,86,4,10.3,1.6,78,22,White,7.2,99.42
+109,Manhattan CD 9,"Hamilton Heights, Manhattanville & West Harlem",38.5,47.1,36.2,9.1,17,27.7,72.3,White,27.9,99.69
+110,Manhattan CD 10,Central Harlem,22.3,19.8,67.3,4.4,11.8,12,88,Black,29.1,84.01
+111,Manhattan CD 11,East Harlem,46.1,30.5,36.9,8.3,26.6,13.9,86.1,Hispanic,32.8,81.07
+112,Manhattan CD 12,"Washington Heights, Inwood & Marble Hill",70.8,40.4,15.6,3.4,44.4,17,83,Hispanic,24.8,141.38
+201,Bronx CD 1,Melrose,68.8,18.4,35.9,1.2,46.1,1.7,98.3,Hispanic,42.8,101.87
+202,Bronx CD 2,"Hunts Point, Longwood",68.8,18.4,35.9,1.2,46.1,1.7,98.3,Hispanic,42.8,112.05
+203,Bronx CD 3,Crotona Park East,62.7,16.2,36.7,1.2,48.3,4.6,95.4,Hispanic,44,122.97
+204,Bronx CD 4,"Concourse, Highbridge & Mount Eden",64.4,16.5,38.2,2,45.6,1.4,98.6,Hispanic,38,107.63
+205,Bronx CD 5,"Morris Heights, Fordham South & Mount Hope",68.1,13.5,35.3,1.7,51.9,1.5,98.5,Hispanic,41.6,108.91
+206,Bronx CD 6,"Belmont, East Tremont",62.7,16.2,36.7,1.2,48.3,4.6,95.4,Hispanic,44,108.79
+207,Bronx CD 7,"Bedford Park, Fordham North & Norwood",67,19.3,23.1,7.7,53.4,7.4,92.6,Hispanic,31.9,118.24
+208,Bronx CD 8,"Riverdale, Fieldston & Kingsbridge",45.7,48.1,17.8,5.9,31.5,34.1,65.9,White,17.7,103.60
+209,Bronx CD 9,"Castle Hill, Clason Point & Parkchester",57.6,20.7,38.3,8,37,2.5,97.5,Hispanic,28.2,103.90
+210,Bronx CD 10,"Co-op City, Pelham Bay & Schuylerville",34.8,45.9,30.9,3.2,22.7,33.6,66.4,White,12.5,101.99
+211,Bronx CD 11,"Pelham Parkway, Morris Park & Laconia",44.2,36,25.4,8.9,31.9,24.2,75.8,Hispanic,20.3,103.16
+212,Bronx CD 12,"Wakefield, Williamsbridge & Woodlawn",22.5,12.3,70,2.8,16.6,7.1,92.9,Black,19.8,109.48
+301,Brooklyn CD 1,Greenpoint & Williamsburg,24.4,78.9,6.4,7.1,9.2,63.5,36.5,White,27.1,74.63
+302,Brooklyn CD 2,Brooklyn Heights & Fort Greene,17,53.5,31.2,10.2,9.4,44.3,55.7,White,19.3,87.54
+303,Brooklyn CD 3,Bedford-Stuyvesant,19.4,27,63.3,3.2,8.1,18.7,81.3,Black,31.7,89.31
+304,Brooklyn CD 4,Bushwick,64.8,44.4,28,4.9,24.7,11.8,88.2,Hispanic,29.2,90.00
+305,Brooklyn CD 5,East New York & Starrett City,37,25.7,59.6,4,11.8,4.7,95.3,Black,32.2,111.59
+306,Brooklyn CD 6,"Park Slope, Carroll Gardens & Red Hook",19.4,75.3,9.3,8.9,11,63.4,36.6,White,10.2,86.92
+307,Brooklyn CD 7,Sunset Park & Windsor Terrace,42.2,38.5,4.6,32.6,25.6,21.8,78.2,Hispanic,28.6,94.71
+308,Brooklyn CD 8,Crown Heights North & Prospect Heights,11.8,23.2,67.5,4.8,6.9,19,81,Black,26,87.74
+309,Brooklyn CD 9,"Crown Heights South, Prospect Lefferts & Wingate",9.1,20,73.8,2.7,4.9,17.2,82.8,Black,22.6,89.64
+310,Brooklyn CD 10,Bay Ridge & Dyker Heights,14.5,68.6,2.7,24.6,5.7,58.8,41.2,White,16.7,97.04
+311,Brooklyn CD 11,Bensonhurst & Bath Beach,13.7,54.3,1.4,38.4,6.7,46.7,53.3,White,17.5,97.93
+312,Brooklyn CD 12,"Borough Park, Kensington & Ocean Parkway",11.4,75.8,2.4,15,7.7,71.1,28.9,White,32.5,99.44
+313,Brooklyn CD 13,Brighton Beach & Coney Island,14.6,67.3,13.1,14.8,6,58.4,41.6,White,27.4,98.87
+314,Brooklyn CD 14,Flatbush & Midwood,14.3,44.9,35.4,11,10.4,40.1,59.9,White,21.5,99.47
+315,Brooklyn CD 15,"Sheepshead Bay, Gerritsen Beach & Homecrest",7.4,77.3,4.4,16.8,2.5,71.7,28.3,White,16.3,98.11
+316,Brooklyn CD 16,Brownsville & Ocean Hill,20.5,6.9,81.9,1.2,10.9,1.4,98.6,Black,37.2,107.23
+317,Brooklyn CD 17,"East Flatbush, Farragut & Rugby",6.8,3.2,92.4,1.7,3.7,1.5,98.5,Black,17.1,106.91
+318,Brooklyn CD 18,Canarsie & Flatlands,8.2,27.6,64.6,4.6,4,24,76,Black,12.1,103.76
+401,Queens CD 1,Astoria & Long Island City,28.6,67,9.1,15.2,10.9,48.2,51.8,White,17.8,99.34
+402,Queens CD 2,Sunnyside & Woodside,33.2,53.5,3,36.6,8.8,28,72,White,14.4,103.04
+403,Queens CD 3,Jackson Heights & North Corona,65.5,46.5,8,18.2,29.5,10.2,89.8,Hispanic,20.7,103.43
+404,Queens CD 4,Elmhurst & South Corona,50.3,42.6,9.4,34,15.1,7.1,92.9,Hispanic,21.8,101.74
+405,Queens CD 5,"Ridgewood, Glendale & Middle Village",35.7,82.7,2.6,8.5,7.4,54.1,45.9,White,14.7,101.71
+406,Queens CD 6,Forest Hills & Rego Park,14.9,65.3,3.5,27.9,4.9,53.7,46.3,White,10.2,102.97
+407,Queens CD 7,"Flushing, Murray Hill & Whitestone",16.9,37.6,3.1,51.8,9.5,28.2,71.8,Asian,15.5,101.24
+408,Queens CD 8,"Briarwood, Fresh Meadows & Hillcrest",18.6,43.2,13.4,35.6,11.3,32.8,67.2,White,15.4,102.25
+409,Queens CD 9,Richmond Hill & Woodhaven,40.9,39.6,9.7,28.3,26.9,18.5,81.5,Hispanic,15.3,103.64
+410,Queens CD 10,Howard Beach & Ozone Park,23.8,36.6,18.9,22.6,26.3,23.5,76.5,White,13.3,103.85
+411,Queens CD 11,"Bayside, Douglaston & Little Neck",11.7,52,3,43.2,4.2,42.5,57.5,White,7.9,103.05
+412,Queens CD 12,"Jamaica, Hollis & St. Albans",19,6.9,68.2,11.9,16.4,1.7,98.3,Black,16.2,110.99
+413,Queens CD 13,"Queens Village, Cambria Heights & Rosedale",11.1,19,60.1,16.9,6.9,12.5,87.5,Black,8.9,107.49
+414,Queens CD 14,"Far Rockaway, Breezy Point & Broad Channel",22.8,50.3,40.2,3.6,7.8,35.8,64.2,White,20.2,104.98
+501,Staten Island CD 1,"Port Richmond, Stapleton & Mariner's Harbor",29,59.3,26.2,8.4,9,38.9,61.1,White,19.9,103.59
+502,Staten Island CD 2,New Springville & South Beach,12.3,80.2,4.8,13.7,2.3,69.8,30.2,White,8.8,97.42
+503,Staten Island CD 3,"Tottenville, Great Kills & Annadale",10.1,93.3,1.8,4.8,0.9,83.5,16.5,White,7.3,100.61
